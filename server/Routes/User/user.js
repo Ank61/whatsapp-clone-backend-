@@ -1,8 +1,9 @@
 const express = require("express");
 const bcrypt = require('bcrypt');
 const app = express();
-const userModal = require("../../Modals/userModal");
-// const roleModal = require("../Modal/RoleModal");
+const userModal = require("../../Models/userModal");
+const { protect } = require("../../middleware/authMiddleware");
+const generateToken = require("../../Config/generateToken");
 
 app.post("/login", async (request, response) => {
     try {
@@ -14,9 +15,14 @@ app.post("/login", async (request, response) => {
                 return response.send("Login failed")
             }
             if (result) {
-                response.send({ status: 200, text: "Login Successfull", data: fetchUser })
+                response.json({
+                    _id: fetchUser[0]._id,
+                    username: fetchUser[0].username,
+                    email: fetchUser[0].email,
+                    token: generateToken(fetchUser[0]._id),
+                })
             } else {
-                response.send({ status: 404, text: "Login Failed" })
+                response.status(401).send("Login Failed")
             }
         });
     }
@@ -26,39 +32,24 @@ app.post("/login", async (request, response) => {
     }
 })
 
-// app.get("/all", async (request, response) => {
-//     try {
-//        userModal.aggregate([
-//         {
-//           $lookup: {
-//             from: 'roles',
-//             localField: 'role',
-//             foreignField: '_id',
-//             as: 'userRole',
-//           },
-//         },
-//         {
-//           $unwind: '$userRole',
-//         },
-//         {
-//           $project: {
-//             _id: 1,
-//             name: 1,
-//             email: 1,
-//             password: 1,
-//             mobile: 1,
-//             role: '$userRole.role',
-//           },
-//         }
-//           ]).exec().then(resp=>response.send(resp)).catch(err=>response.send(err))
-//     }
-//     catch (error) {
-//         console.log("Error Occured in User API")
-//         response.send("Error Ocurred")
-//     }
-// })
 
-app.post("/new", async (request, response) => {
+// to get particular user from the userRoute
+//  /user?search=piyush&lastname=agarwal =>{search : piyush, lastname : agarwal}
+
+app.get("/", protect, async (request, response) => {
+    const keyword = request.query.search ? {
+        $or: [
+            { name: { $regex: request.query.search, $options: "i" } },
+            { email: { $regex: request.query.search, $options: "i" } }
+        ],
+    } : {};
+    const user = await userModal.find(keyword)
+    // .find({_id : {$ne :  request.user._id }});
+    //Do not send logged in users itself inside user searched result
+    response.send(user)
+})
+
+app.post("/new", protect, async (request, response) => {
     try {
         const { username, email, password } = request.body;
 
@@ -81,8 +72,8 @@ app.post("/new", async (request, response) => {
                     return response.status(500).send("Error occurred while creating the user2");
                 }
                 const newUser = new userModal({
-                    username : username,
-                    email : email,
+                    username: username,
+                    email: email,
                     password: hash
                 })
 
