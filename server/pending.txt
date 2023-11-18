@@ -1,0 +1,6 @@
+=> Pending Routes
+   --> GrouChatAPI : 
+        -> To rename the group
+        -> Adding new members to the group
+        -> Removing from the group
+
