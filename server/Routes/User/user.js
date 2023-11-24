@@ -49,7 +49,7 @@ app.get("/", protect, async (request, response) => {
     response.send(user)
 })
 
-app.post("/new", protect, async (request, response) => {
+app.post("/new", async (request, response) => {
     try {
         const { username, email, password } = request.body;
 

@@ -4,7 +4,7 @@ const { protect } = require("../../middleware/authMiddleware");
 const Chat = require("../../Models/chatModel");
 const userModal = require("../../Models/userModal");
 
-app.post("/new", protect, async (request, response) => {
+app.post("/new", async (request, response) => {
   //Either find chats or create new chat with the requested user.ID 
   //If there exists a chat with this userID then return that.
   //If the chat does not exist then create new chat.d
