@@ -4,6 +4,7 @@ const app = express();
 const userModal = require("../../Models/userModal");
 const { protect } = require("../../middleware/authMiddleware");
 const generateToken = require("../../Config/generateToken");
+const friendModal = require("../../Models/friendModal");
 
 app.post("/login", async (request, response) => {
     try {
