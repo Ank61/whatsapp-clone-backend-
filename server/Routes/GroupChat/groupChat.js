@@ -1,7 +1,7 @@
 const express = require("express");
 const Chat = require("../../Models/chatModel");
 const userGroup = require("../../Models/userModal");
-const { protect } = require("../../middleware/authMiddleware");
+const { protect } = require("../../Middleware/authMiddleware");
 const { response } = require("../Chat/chatRoute");
 const app = express();
 

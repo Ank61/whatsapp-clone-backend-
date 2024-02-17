@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require('bcrypt');
 const app = express();
 const userModal = require("../../Models/userModal");
-const { protect } = require("../../middleware/authMiddleware");
+const { protect } = require("../../Middleware/authMiddleware");
 const generateToken = require("../../Config/generateToken");
 const friendModal = require("../../Models/friendModal");
 
